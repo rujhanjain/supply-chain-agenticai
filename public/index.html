@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supply Chain Agentic AI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 700px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-bottom: 2px solid #34495e;
+        }
+
+        .chat-body {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            height: 400px;
+            background: #ecf0f1;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 12px 18px;
+            border-radius: 10px;
+            max-width: 90%;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .user-message {
+            background: #3498db;
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #e5e7eb;
+            color: #2c3e50;
+            align-self: flex-start;
+        }
+
+        .input-container {
+            padding: 15px;
+            background: #f7f9fb;
+            border-top: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .positive-button {
+            padding: 8px 20px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .positive-button:hover {
+            background: #27ae60;
+        }
+
+        .negative-button {
+            padding: 8px 20px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .negative-button:hover {
+            background: #c0392b;
+        }
+
+        .high-priority-button {
+            padding: 8px 20px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .high-priority-button:hover {
+            background: #c0392b;
+        }
+
+        .medium-priority-button {
+            padding: 8px 20px;
+            background: #f39c12;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .medium-priority-button:hover {
+            background: #e67e22;
+        }
+
+        .low-priority-button {
+            padding: 8px 20px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .low-priority-button:hover {
+            background: #27ae60;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .custom-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+
+        .route-table th, .route-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .route-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .route-table td:first-child {
+            font-weight: bold;
+        }
+
+        .route-table .path {
+            min-width: 150px;
+        }
+
+        .route-table .conditions {
+            min-width: 140px;
+        }
+
+        .custom-table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-table-container::-webkit-scrollbar-track {
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        .custom-table-container::-webkit-scrollbar-thumb {
+            background: #ced4da;
+            border-radius: 4px;
+        }
+
+        .custom-table-container::-webkit-scrollbar-thumb:hover {
+            background: #adb5bd;
+        }
+
+        .custom-table-container {
+            scrollbar-width: thin;
+            scrollbar-color: #ced4da #fff;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        .typing::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+
+        .loading img {
+            max-width: 100%;
+            width: auto;
+            height: 26px;
+            display: block;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .email-preview {
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            max-height: 150px;
+            width: 97%;
+            overflow: auto;
+        }
+
+        .email-preview::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .email-preview::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .email-preview::-webkit-scrollbar-thumb {
+            background: #ced4da;
+            border-radius: 3px;
+        }
+
+        .email-preview::-webkit-scrollbar-thumb:hover {
+            background: #adb5bd;
+        }
+
+        .email-preview {
+            scrollbar-width: thin;
+            scrollbar-color: #ced4da #f1f1f1;
+        }
+
+        .action-buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-left: 16px;
+            list-style-type: disc;
+        }
+
+        /* Popup styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            position: relative;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 80%;
+            max-height: 80%;
+            overflow: auto;
+        }
+
+        .popup-iframe {
+            width: 100%;
+            height: 60vh; 
+            border: none;
+            object-fit: cover;
+        }
+
+        .popup-buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .confirm-route-button {
+            padding: 8px 20px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .confirm-route-button:hover {
+            background: #27ae60;
+        }
+
+        .go-back-button {
+            padding: 8px 20px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .go-back-button:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Supply Chain Management with Agentic AI</div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="input-container">
+            <input type="text" id="chatInput" placeholder="Tell me about a shipment issue or ask for updates...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- Popup container -->
+    <div class="popup-overlay" id="routePopup">
+        <div class="popup-content">
+            <iframe class="popup-iframe" id="routeIframe"></iframe>
+            <div class="popup-buttons">
+                <button class="confirm-route-button" onclick="confirmRoute()">Confirm Route</button>
+                <button class="go-back-button" onclick="closePopup()">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMTP.js SDK -->
+    <script>
+    const chatBody = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+    let conversationState = null;
+    let selectedRoute = null;
+    let currentEmails = null;
+    const botResponses = [
+        {
+            question: [
+                "Supply of XYZ raw material from Jaipur to Ahmedabad with expected delivery in the evening of 07-05-2025, is facing an import delay of one day. Please handle it accordingly.",
+                "Supply of shipment S123 is facing an import delay of one day. Please handle it accordingly."
+            ],
+            answer: "**Step 1: Shipment Issue Reported**\n\n**Extracted Shipment Details**:\n    * Shipment ID: S123\n    * Material: XYZ Raw Material\n    * Route: Jaipur to Ahmedabad\n    * Original Delivery Date: 07-05-2025 (Evening)\n    * Issue: Import delay of 1 day\n\n**Can you confirm these shipment details?** Please select Yes or No to proceed.",
+            table: {
+                "Shipment": {
+                    "ID": "S123",
+                    "Material": "XYZ Raw Material",
+                    "Origin": "Jaipur",
+                    "Destination": "Ahmedabad",
+                    "ETA": "2025-05-07",
+                    "Status": "Delayed"
+                }
+            },
+            state: "awaiting_confirmation",
+            buttons: [
+                { label: "Yes", input: "Yes." },
+                { label: "No", input: "No." }
+            ]
+        },
+        {
+            question: "Yes.",
+            answer: "**Step 2: Shipment Details Confirmed**\n\n**How urgent is this shipment?** Please select High, Medium, or Low to help me prioritize:\n    * High: Urgent action required\n    * Medium: Expedited handling needed\n    * Low: Standard delay notification",
+            table: null,
+            state: "awaiting_priority",
+            buttons: [
+                { label: "High", input: "This order is of high priority, please do the needful." },
+                { label: "Medium", input: "This order is of medium priority, please do the needful." },
+                { label: "Low", input: "This order is of low priority, please do the needful." }
+            ]
+        },
+        {
+            question: "No.",
+            answer: "**Step 2: Shipment Details Not Confirmed**\n\n**Please provide the correct shipment details or clarify the issue** so we can proceed with handling the delay.",
+            table: null,
+            state: "awaiting_correct_details"
+        },
+        {
+            question: "This order is of high priority",
+            answer: "**Step 3: Priority Confirmed - High**\n\n**Action Taken**: I’ve drafted emails to address the delay for Shipment ID S123:\n    * Requesting urgent supply from a local vendor\n    * Notifying the original vendor to process a return\n    * Updating the receiver on the revised plan\n\n**Please review the email drafts below** and approve or reject them.",
+            table: null,
+            state: "show_emails_high",
+            emails: [
+                {
+                    to: "local.vendor@example.com",
+                    subject: "Urgent Request for XYZ Raw Material Supply (Shipment ID: S123)",
+                    body: "Dear Sir/Madam,\n\nDue to an import delay, we urgently require XYZ raw material (Shipment ID: S123) for delivery in Ahmedabad by 07-05-2025 evening. Please confirm your ability to supply the required quantity, along with pricing and delivery details, by 08:00 AM on 07-05-2025.\n\nThank you for your prompt attention.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                },
+                {
+                    to: "original.vendor@example.com",
+                    subject: "Cancellation of XYZ Raw Material Shipment (Shipment ID: S123)",
+                    body: "Dear Sir/Madam,\n\nDue to an unexpected import delay for Shipment ID S123 (XYZ raw material from Jaipur to Ahmedabad), we are sourcing the material locally to meet our deadline. Please process a return for the delayed shipment and confirm receipt of this request by 07-05-2025.\n\nThank you for your cooperation.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                },
+                {
+                    to: "receiver@example.com",
+                    subject: "Update on XYZ Raw Material Shipment (Shipment ID: S123)",
+                    body: "Dear Sir/Madam,\n\nWe regret to inform you that Shipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues. To meet the original delivery deadline of 07-05-2025 evening, we are arranging an alternative local supply. We will provide further updates by 08-05-2025.\n\nThank you for your understanding.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                }
+            ]
+        },
+        {
+            question: "This order is of medium priority",
+            answer: "**Step 3: Priority Confirmed - Medium**\n\n**Action Taken**: The original route (Jaipur → Ahmedabad) was optimal at ₹45,000 with an ETA of 07-05-2025, but an import delay has increased costs to ₹50,000 and delayed the ETA to 08-05-2025. I’ve analyzed alternative routes, each with trade-offs in cost, time, and conditions. **Recommendation**: Route 1 is optimal as it restores the original ETA at a competitive cost, with only a minor roadblock risk.\n\n**Please select a route to proceed.**",
+            table: {
+                "Original Route": { "Route": "Original", "Path": "Jaipur → Ahmedabad", "Updated Cost": "₹50,000", "Cost Difference": "₹5,000", "ETA": "08-05-2025", "Conditions": "Moderate rain in Jaipur, import delay (originally ₹45,000, ETA 07-05-2025)" },
+                "Alternative Route 1": { "Route": "Route 1", "Path": "Jaipur → Udaipur → Ahmedabad", "Cost": "₹48,000", "Cost Difference": "-₹2,000", "ETA": "07-05-2025", "Conditions": "Clear weather, minor roadblock risk in Udaipur" },
+                "Alternative Route 2": { "Route": "Route 2", "Path": "Jaipur → Ajmer → Surat → Ahmedabad", "Cost": "₹55,000", "Cost Difference": "+₹5,000", "ETA": "07-05-2025", "Conditions": "Clear weather, construction in Surat (minor delay risk)" },
+                "Alternative Route 3": { "Route": "Route 3", "Path": "Jaipur → Jodhpur → Vadodara → Ahmedabad", "Cost": "₹56,000", "Cost Difference": "+₹6,000", "ETA": "08-05-2025", "Conditions": "Clear weather, heavy traffic in Vadodara (increases travel time)" }
+            },
+            state: "awaiting_route_selection",
+            buttons: [
+                { label: "Select Route 1", input: "Route 1", routeImage: "Route_1.PNG" },
+                { label: "Select Route 2", input: "Route 2", routeImage: "Route_2.PNG" },
+                { label: "Select Route 3", input: "Route 3", routeImage: "Route_3.PNG" }
+            ]
+        },
+        {
+            question: "Confirm Route 1",
+            answer: "**Step 4: Route Selected**\n\n**Details**: Route 1 (Jaipur → Udaipur → Ahmedabad, Cost: ₹48,000, ETA: 07-05-2025) has been selected. This route restores the original ETA with a minor roadblock risk. I’ve drafted emails to inform the receiver and request the shipment team to implement this route.\n\n**Please review the email drafts below** and approve or reject them.",
+            table: null,
+            state: "show_emails_medium",
+            emails: [
+                {
+                    to: "receiver@example.com",
+                    subject: "Update on XYZ Raw Material Shipment (Shipment ID: S123)",
+                    body: "Dear Sir/Madam,\n\nShipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues, with a revised delivery date of 08-05-2025. We are optimizing the route to expedite delivery and will update you by 08-05-2025.\nThank you for your patience.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                },
+                {
+                    to: "original.vendor@example.com",
+                    subject: "Implement Alternative Route for XYZ Raw Material (Shipment ID: S123)",
+                    body: "Dear Team,\n\nShipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues. Please implement the alternative route: Jaipur → Udaipur → Ahmedabad (estimated cost: ₹48,000, ETA: 07-05-2025). This route restores the original ETA but has a minor roadblock risk in Udaipur. Kindly confirm implementation by 08:00 AM on 07-05-2025.\nThank you for your swift action.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                }
+            ]
+        },
+        {
+            question: "Confirm Route 2",
+            answer: "**Step 4: Route Selected**\n\n**Details**: Route 2 (Jaipur → Ajmer → Surat → Ahmedabad, Cost: ₹55,000, ETA: 07-05-2025) has been selected. This route restores the original ETA but is costlier due to construction in Surat. I’ve drafted emails to inform the receiver and request the shipment team to implement this route.\n\n**Please review the email drafts below** and approve or reject them.",
+            table: null,
+            state: "show_emails_medium",
+            emails: [
+                {
+                    to: "receiver@example.com",
+                    subject: "Update on XYZ Raw Material Shipment (Shipment ID: S123)",
+                    body: "Dear Sir/Madam,\n\nShipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues, with a revised delivery date of 08-05-2025. We are optimizing the route to expedite delivery and will update you by 08-05-2025.\nThank you for your patience.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                },
+                {
+                    to: "original.vendor@example.com",
+                    subject: "Implement Alternative Route for XYZ Raw Material (Shipment ID: S123)",
+                    body: "Dear Team,\n\nShipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues. Please implement the alternative route: Jaipur → Ajmer → Surat → Ahmedabad (estimated cost: ₹55,000, ETA: 07-05-2025). This route restores the original ETA but has a minor delay risk due to construction in Surat. Kindly confirm implementation by 08:00 AM on 07-05-2025.\nThank you for your swift action.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                }
+            ]
+        },
+        {
+            question: "Confirm Route 3",
+            answer: "**Step 4: Route Selected**\n\n**Details**: Route 3 (Jaipur → Jodhpur → Vadodara → Ahmedabad, Cost: ₹46,000, ETA: 08-05-2025) has been selected. This route is the most cost-effective but delayed due to heavy traffic in Vadodara. I’ve drafted emails to inform the receiver and request the shipment team to implement this route.\n\n**Please review the email drafts below** and approve or reject them.",
+            table: null,
+            state: "show_emails_medium",
+            emails: [
+                {
+                    to: "receiver@example.com",
+                    subject: "Update on XYZ Raw Material Shipment (Shipment ID: S123)",
+                    body: "Dear Sir/Madam,\n\nShipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues, with a revised delivery date of 08-05-2025. We are optimizing the route to expedite delivery and will update you by 08-05-2025.\nThank you for your patience.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                },
+                {
+                    to: "original.vendor@example.com",
+                    subject: "Implement Alternative Route for XYZ Raw Material (Shipment ID: S123)",
+                    body: "Dear Team,\n\nShipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues. Please implement the alternative route: Jaipur → Jodhpur → Vadodara → Ahmedabad (estimated cost: ₹46,000, ETA: 08-05-2025). This route is cost-effective but delayed due to heavy traffic in Vadodara. Kindly confirm implementation by 08:00 AM on 07-05-2025.\nThank you for your swift action.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                }
+            ]
+        },
+        {
+            question: "This order is of low priority",
+            answer: "**Step 3: Priority Confirmed - Low**\n\n**Action Taken**: I’ve drafted an email to notify the receiver of the delay for Shipment ID S123.\n\n**Please review the email draft below** and approve or reject it.",
+            table: null,
+            state: "show_emails_low",
+            emails: [
+                {
+                    to: "receiver@example.com",
+                    subject: "Update on XYZ Raw Material Shipment (Shipment ID: S123)",
+                    body: "Dear Sir/Madam,\n\nWe wish to inform you that Shipment ID S123 (XYZ raw material from Jaipur to Ahmedabad) is delayed by one day due to import issues, with a revised delivery date of 08-05-2025. We will continue to monitor the situation and provide updates as needed.\nThank you for your understanding.\n\nBest regards,\nZARA Agent\nSupply Chain Management"
+                }
+            ]
+        },
+        {
+            question: "Approve.",
+            answer: "**Step 5: Emails Dispatched**\n\n**Details**:\n    * All emails for Shipment ID S123 have been sent to the relevant recipients.",
+            table: null,
+            state: null,
+            action: "send_emails"
+        },
+        {
+            question: "Reject.",
+            answer: "**Step 5: Email Drafts Discarded**\n\n**Details**:\n    * All email drafts for Shipment ID S123 have been deleted\n\n**What would you like to do next?** Please provide instructions to proceed with handling the delay.",
+            table: null,
+            state: "awaiting_instructions"
+        },
+        {
+            question: "track shipment",
+            answer: "**Shipment Status Overview**:\n\nHere are the details for all active shipments:\n    * Displaying current status, ETA, and location\n\nI’m monitoring these shipments and taking actions based on their priority.",
+            table: {
+                "Shipment 1": {
+                    "ID": "S123",
+                    "Material": "XYZ Raw Material",
+                    "Status": "Delayed",
+                    "ETA": "2025-05-08",
+                    "Location": "Jaipur Port"
+                },
+                "Shipment 2": {
+                    "ID": "S124",
+                    "Material": "ABC Component",
+                    "Status": "In Transit",
+                    "ETA": "2025-05-09",
+                    "Location": "Mumbai Warehouse"
+                },
+                "Shipment 3": {
+                    "ID": "S125",
+                    "Material": "LMN Alloy",
+                    "Status": "On Hold",
+                    "ETA": "2025-05-10",
+                    "Location": "Delhi Hub"
+                }
+            }
+        },
+        {
+            question: "shipment status",
+            answer: "**Shipment Status Overview**:\n\nHere are the details for all active shipments:\n    * Displaying current status, ETA, and location\n\nI’m monitoring these shipments and taking actions based on their priority.",
+            table: {
+                "Shipment 1": {
+                    "ID": "S123",
+                    "Material": "XYZ Raw Material",
+                    "Status": "Delayed",
+                    "ETA": "2025-05-08",
+                    "Location": "Jaipur Port"
+                },
+                "Shipment 2": {
+                    "ID": "S124",
+                    "Material": "ABC Component",
+                    "Status": "In Transit",
+                    "ETA": "2025-05-09",
+                    "Location": "Mumbai Warehouse"
+                },
+                "Shipment 3": {
+                    "ID": "S125",
+                    "Material": "LMN Alloy",
+                    "Status": "On Hold",
+                    "ETA": "2025-05-10",
+                    "Location": "Delhi Hub"
+                }
+            }
+        },
+        {
+            question: "inventory status",
+            answer: "**Current Inventory Status**:\n\n    * XYZ Raw Material: 20 units\n    * Backup Stock: 10 units\n\n**Recommendation**: To avoid production delays, consider restocking by 07-05-2025.",
+            table: null
+        },
+        {
+            question: "inventory",
+            answer: "**Current Inventory Status**:\n\n    * XYZ Raw Material: 20 units\n    * Backup Stock: 10 units\n\n**Recommendation**: To avoid production delays, consider restocking by 07-05-2025.",
+            table: null
+        },
+        {
+            question: "help",
+            answer: "**I’m here to assist with your supply chain needs**\n\nYou can:\n    * Share details about a shipment issue\n    * Ask for shipment updates\n    * Check inventory levels\n    * Confirm or review logistics actions\nJust let me know what you need, and I’ll guide you through the process!",
+            table: null
+        },
+        {
+            question: "assistance",
+            answer: "**I’m here to assist with your supply chain needs**\n\nYou can:\n    * Share details about a shipment issue\n    * Ask for shipment updates\n    * Check inventory levels\n    * Confirm or review logistics actions\nJust let me know what you need, and I’ll guide you through the process!",
+            table: null
+        }
+    ];
+
+    const defaultResponse = {
+        answer: "**I’m not sure I understood**\n\nCould you clarify your request? For example, you can tell me about a shipment issue, check inventory, or ask for shipment status.",
+        table: null
+    };
+
+    // Function to send emails via SMTP.js with Mailtrap
+    function sendEmails(emails) {
+        fetch('/api/email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ emails: emails })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+        })
+        .catch(error => {
+            console.error('Error sending emails:', error);
+        });
+    }
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    function createTableFromDict(data) {
+        if (!data) return '';
+        let tableHTML = '<div class="custom-table-container"><table class="route-table"><thead><tr>';
+        const firstRow = data[Object.keys(data)[0]];
+        for (let key in firstRow) tableHTML += `<th>${key}</th>`;
+        tableHTML += '</tr></thead><tbody>';
+        for (let rowKey in data) {
+            tableHTML += '<tr>';
+            for (let colKey in data[rowKey]) {
+                const className = colKey.toLowerCase().includes('path') ? 'path' : colKey.toLowerCase().includes('conditions') ? 'conditions' : '';
+                tableHTML += `<td class="${className}">${data[rowKey][colKey]}</td>`;
+            }
+            tableHTML += '</tr>';
+        }
+        tableHTML += '</tbody></table></div>';
+        return tableHTML;
+    }
+
+    function addLoadingMessage() {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.flexDirection = 'column';
+        wrapper.style.alignItems = 'flex-start';
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot-message loading';
+        messageDiv.innerHTML = '<img src="loader.gif" alt="Loading..."><div>Loading...</div>';
+        wrapper.appendChild(messageDiv);
+
+        chatBody.appendChild(wrapper);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        return wrapper;
+    }
+
+    function formatMessage(message) {
+        message = message.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+        const lines = message.split('\n');
+        let formattedLines = [];
+        let inList = false;
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('* ')) {
+                if (!inList) {
+                    formattedLines.push('<ul>');
+                    inList = true;
+                }
+                formattedLines.push(`<li>${trimmed.slice(2).trim()}</li>`);
+            } else {
+                if (inList) {
+                    formattedLines.push('</ul>');
+                    inList = false;
+                }
+                formattedLines.push(line);
+            }
+        });
+
+        if (inList) {
+            formattedLines.push('</ul>');
+        }
+
+        formattedLines = formattedLines.map(line => {
+            if (line.includes('<b>Note:</b>') || line.includes('<b>Recommendation:</b>')) {
+                return line.replace(/(<b>Note:|<b>Recommendation:)/, '$1<br><br>');
+            }
+            return line;
+        });
+
+        return formattedLines.join('<br>');
+    }
+
+    function typeMessage(element, message, tableData, emails, buttons, callback) {
+        const formattedMessage = formatMessage(message);
+        element.classList.add('typing');
+        element.innerHTML = '';
+        const segments = formattedMessage.split('<br><br>');
+        let segmentIndex = 0;
+        const speed = 30;
+
+        function typeSegment() {
+            if (segmentIndex >= segments.length) {
+                element.classList.remove('typing');
+                if (tableData) {
+                    const tableHTML = createTableFromDict(tableData);
+                    const tableContainer = document.createElement('div');
+                    tableContainer.innerHTML = tableHTML;
+                    element.parentElement.appendChild(tableContainer);
+                }
+                if (emails) {
+                    currentEmails = emails; // Store emails for sending on Approve
+                    emails.forEach(email => {
+                        const emailDiv = document.createElement('div');
+                        emailDiv.className = 'email-preview';
+                        emailDiv.innerHTML = `<b>To:</b> ${email.to}<br><b>Subject:</b> ${email.subject}<br><pre>${email.body}</pre>`;
+                        element.parentElement.appendChild(emailDiv);
+                    });
+                    const actionButtons = document.createElement('div');
+                    actionButtons.className = 'action-buttons';
+                    actionButtons.innerHTML = `
+                        <button class="positive-button" onclick="sendMessageWithInput('Approve.')">Approve</button>
+                        <button class="negative-button" onclick="sendMessageWithInput('Reject.')">Reject</button>
+                    `;
+                    element.parentElement.appendChild(actionButtons);
+                }
+                if (buttons) {
+                    const actionButtons = document.createElement('div');
+                    actionButtons.className = 'action-buttons';
+                    buttons.forEach(button => {
+                        let buttonClass = '';
+                        switch (button.label.toLowerCase()) {
+                            case 'yes':
+                            case 'approve':
+                                buttonClass = 'positive-button';
+                                break;
+                            case 'no':
+                            case 'reject':
+                                buttonClass = 'negative-button';
+                                break;
+                            case 'high':
+                                buttonClass = 'high-priority-button';
+                                break;
+                            case 'medium':
+                                buttonClass = 'medium-priority-button';
+                                break;
+                            case 'low':
+                                buttonClass = 'low-priority-button';
+                                break;
+                            case 'select route 1':
+                            case 'select route 2':
+                            case 'select route 3':
+                                buttonClass = 'positive-button';
+                                break;
+                            default:
+                                buttonClass = 'positive-button';
+                        }
+                        const onclickAction = button.routeImage ? 
+                            `showRoutePopup('${button.routeImage}', '${button.input}')` : 
+                            `sendMessageWithInput('${button.input}')`;
+                        actionButtons.innerHTML += `
+                            <button class="${buttonClass}" onclick="${onclickAction}">${button.label}</button>
+                        `;
+                    });
+                    element.parentElement.appendChild(actionButtons);
+                }
+                if (callback) callback();
+                return;
+            }
+
+            const segment = segments[segmentIndex];
+            const subSegments = segment.split('<br>');
+            let subIndex = 0;
+
+            function typeSubSegment() {
+                if (subIndex >= subSegments.length) {
+                    segmentIndex++;
+                    setTimeout(typeSegment, 500);
+                    return;
+                }
+
+                const subSegment = subSegments[subIndex];
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = subSegment;
+
+                const boldElements = tempDiv.getElementsByTagName('b');
+                for (let bold of boldElements) {
+                    bold.style.fontWeight = 'bold';
+                }
+
+                const listElements = tempDiv.getElementsByTagName('li');
+                for (let li of listElements) {
+                    li.style.marginLeft = '16px';
+                    li.style.listStyleType = 'disc';
+                }
+
+                element.appendChild(tempDiv);
+                subIndex++;
+                setTimeout(typeSubSegment, 50);
+            }
+
+            typeSubSegment();
+        }
+
+        typeSegment();
+    }
+
+    function addMessage(message, isUser, tableData = null, emails = null, buttons = null, action = null) {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.flexDirection = 'column';
+        wrapper.style.alignItems = isUser ? 'flex-end' : 'flex-start';
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+
+        if (isUser) {
+            messageDiv.textContent = message;
+            wrapper.appendChild(messageDiv);
+            chatBody.appendChild(wrapper);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        } else {
+            wrapper.appendChild(messageDiv);
+            chatBody.appendChild(wrapper);
+            typeMessage(messageDiv, message, tableData, emails, buttons, () => {
+                chatBody.scrollTop = chatBody.scrollHeight;
+                if (action === "send_emails" && currentEmails) {
+                    sendEmails(currentEmails);
+                    currentEmails = null; // Clear after sending
+                }
+            });
+        }
+    }
+
+    function sendMessageWithInput(message) {
+        chatInput.value = message;
+        sendMessage();
+    }
+
+    function showRoutePopup(imageSrc, routeInput) {
+        const popup = document.getElementById('routePopup');
+        const iframe = document.getElementById('routeIframe');
+        iframe.src = imageSrc;
+        popup.style.display = 'flex';
+        selectedRoute = routeInput.split(' ')[1]; // Extract route number
+        conversationState = "awaiting_route_confirmation";
+    }
+
+    function closePopup() {
+        const popup = document.getElementById('routePopup');
+        popup.style.display = 'none';
+        selectedRoute = null;
+        conversationState = "awaiting_route_selection";
+    }
+
+    function confirmRoute() {
+        if (selectedRoute) {
+            sendMessageWithInput(`Confirm Route ${selectedRoute}`);
+            closePopup();
+        }
+    }
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        chatInput.value = '';
+
+        const loadingWrapper = addLoadingMessage();
+
+        setTimeout(() => {
+            if (chatBody.contains(loadingWrapper)) {
+                chatBody.removeChild(loadingWrapper);
+            }
+
+            const normalizedInput = message.toLowerCase().trim().replace(/\./g, '');
+            let matchedResponse = botResponses.find(response => {
+                if (Array.isArray(response.question)) {
+                    return response.question.some(q => {
+                        const normalizedQuestion = q.toLowerCase().trim().replace(/\./g, '');
+                        console.log(`Checking input: "${normalizedInput}" against question: "${normalizedQuestion}"`);
+                        return normalizedInput.includes(normalizedQuestion);
+                    });
+                } else {
+                    const normalizedQuestion = response.question.toLowerCase().trim().replace(/\./g, '');
+                    console.log(`Checking input: "${normalizedInput}" against question: "${normalizedQuestion}"`);
+                    return normalizedInput.includes(normalizedQuestion);
+                }
+            });
+
+            if (!matchedResponse) {
+                if (conversationState === "awaiting_confirmation" && !["yes", "no"].includes(normalizedInput)) {
+                    matchedResponse = {
+                        answer: "**Can you confirm these shipment details?**\n\nPlease select Yes or No to proceed.",
+                        table: null,
+                        buttons: [
+                            { label: "Yes", input: "Yes." },
+                            { label: "No", input: "No." }
+                        ]
+                    };
+                } else if (conversationState === "awaiting_priority" && !["This order is of high priority", "This order is of medium priority", "This order is of low priority"].some(p => normalizedInput.includes(p.toLowerCase()))) {
+                    matchedResponse = {
+                        answer: "**How urgent is this shipment?**\n\nPlease select High, Medium, or Low to help me prioritize.",
+                        table: null,
+                        buttons: [
+                            { label: "High", input: "This order is of high priority, please do the needful." },
+                            { label: "Medium", input: "This order is of medium priority, please do the needful." },
+                            { label: "Low", input: "This order is of low priority, please do the needful." }
+                        ]
+                    };
+                } else if (conversationState === "awaiting_route_selection" && !["route 1", "route 2", "route 3"].includes(normalizedInput)) {
+                    matchedResponse = {
+                        answer: "**Please select a route to proceed**:\n\nChoose an alternative route from the options below.",
+                        table: botResponses.find(r => r.question === "This order is of medium priority").table,
+                        buttons: [
+                            { label: "Select Route 1", input: "Route 1", routeImage: "Route_1.PNG" },
+                            { label: "Select Route 2", input: "Route 2", routeImage: "Route_2.PNG" },
+                            { label: "Select Route 3", input: "Route 3", routeImage: "Route_3.PNG" }
+                        ]
+                    };
+                } else if (conversationState === "awaiting_route_confirmation" && !["confirm route 1", "confirm route 2", "confirm route 3"].includes(normalizedInput)) {
+                    matchedResponse = {
+                        answer: "**Please select a route to proceed**:\n\nChoose an alternative route from the options below.",
+                        table: botResponses.find(r => r.question === "This order is of medium priority").table,
+                        buttons: [
+                            { label: "Select Route 1", input: "Route 1", routeImage: "Route_1.PNG" },
+                            { label: "Select Route 2", input: "Route 2", routeImage: "Route_2.PNG" },
+                            { label: "Select Route 3", input: "Route 3", routeImage: "Route_3.PNG" }
+                        ]
+                    };
+                } else if (["show_emails_high", "show_emails_medium", "show_emails_low"].includes(conversationState) && !["approve", "reject"].includes(normalizedInput)) {
+                    matchedResponse = {
+                        answer: "**Please review the email drafts**:\n\nSelect Approve to send the emails or Reject to discard them.",
+                        table: null,
+                        buttons: [
+                            { label: "Approve", input: "Approve." },
+                            { label: "Reject", input: "Reject." }
+                        ]
+                    };
+                } else if (conversationState === "awaiting_correct_details") {
+                    matchedResponse = {
+                        answer: "**Thanks for the details**:\n\nCan you confirm if these are correct or provide further clarification?",
+                        table: null,
+                        buttons: [
+                            { label: "Yes", input: "Yes." },
+                            { label: "No", input: "No." }
+                        ]
+                    };
+                } else {
+                    matchedResponse = defaultResponse;
+                    console.log(`No match found for input: "${message}"`);
+                }
+            }
+
+            conversationState = matchedResponse.state || conversationState;
+            addMessage(matchedResponse.answer, false, matchedResponse.table, matchedResponse.emails, matchedResponse.buttons, matchedResponse.action);
+        }, 2000);
+    }
+
+    window.onload = function() {
+        addMessage("Hello! I'm ZARA, your AI assistant for supply chain management. How can I help you with shipments, inventory, or other logistics needs?", false);
+    };
+    </script>
+</body>
+</html>
